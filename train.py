@@ -61,14 +61,14 @@ args = parser.parse_args()
 
 num_workers = args.workers
 
-TRAIN_FOLDER       = 'train'
-EXTRA_TRAIN_FOLDER = 'flickr_images' #not used -> ./good_imgs_train.txt
-EXTRA_VAL_FOLDER   = 'val_images' #not used -> ./good_imgs_val.txt
-TEST_FOLDER        = 'test'
+TRAIN_FOLDER       = '../../data/train'
+EXTRA_TRAIN_FOLDER = '../../data/flickr_images' #not used -> ./good_imgs_train.txt
+EXTRA_VAL_FOLDER   = '../../data/val_images' #not used -> ./good_imgs_val.txt
+TEST_FOLDER        = '../../data/'
 
 CROP_SIZE = args.crop_size
 
-experiment_name = 'resnet50_antorsaegen'
+experiment_name = 'resnet50_first'
 
 # MAIN
 model = ResNet(len(CLASSES), pretrained=args.use_imagenet_weights)

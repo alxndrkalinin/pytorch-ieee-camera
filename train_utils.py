@@ -36,6 +36,8 @@ def train_and_validate(
     valid_losses = []
     lr_reset_epoch = start_epoch
     
+    print('Epochs: {}'.format(epochs))
+    
     for epoch in range(start_epoch, epochs+1):
         train(
             train_data_loader,
@@ -72,6 +74,7 @@ def train(train_loader, model, optimizer, criterion, epoch):
     model.train()
     
     logging.info('Epoch: {}'.format(epoch))
+    print('Epoch: {}'.format(epoch))
     for i, (inputs, O, targets) in enumerate(train_loader):
         inputs, O, targets = variable(inputs), variable(O), variable(targets)
         outputs = model(inputs, O)
@@ -83,11 +86,13 @@ def train(train_loader, model, optimizer, criterion, epoch):
         
         losses.append(loss.data[0])
         
-        if i % 100 == 0:
-            logging.info('Step: {}, train_loss: {}'.format(i, np.mean(losses[-100:])))
+        if i % 50 == 0:
+            logging.info('Step: {}, train_loss: {}'.format(i, np.mean(losses[-50:])))
+            print('Step: {}, train_loss: {}'.format(i, np.mean(losses[-50:])))
             
     train_loss = np.mean(losses)
     logging.info('train_loss: {}'.format(train_loss))
+    print('train_loss: {}'.format(train_loss))
 
 def validate(val_loader, model, criterion):
     accuracy_scores = []
@@ -106,6 +111,7 @@ def validate(val_loader, model, criterion):
         
     valid_loss, valid_accuracy = np.mean(losses), np.mean(accuracy_scores)
     logging.info('valid_loss: {}, valid_acc: {}'.format(valid_loss, valid_accuracy))
+    print('valid_loss: {}, valid_acc: {}'.format(valid_loss, valid_accuracy))
     return valid_loss
 
 def save_checkpoint(state, filename, checkpoint_dir):

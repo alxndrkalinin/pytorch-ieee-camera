@@ -10,7 +10,7 @@ class AvgPool(nn.Module):
 
 class ResNet(nn.Module):
     def __init__(self, num_classes, net_cls=models.resnet50, pretrained=False):
-        super().__init__()
+        super(ResNet, self).__init__()
         self.net = net_cls(pretrained=pretrained)
         self.net.avgpool = AvgPool()
         

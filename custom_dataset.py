@@ -29,6 +29,7 @@ class IEEECameraDataset(Dataset):
             print(self.items[idx])
         
         X, O, y = sample
+
         return X, O, y
 
 RESOLUTIONS = {
@@ -100,6 +101,7 @@ def random_manipulation(img, manipulation=None):
     return im_decoded
 
 def get_crop(img, crop_size, random_crop=False):
+    #print(img.shape)
     center_x, center_y = img.shape[1] // 2, img.shape[0] // 2
     half_crop = crop_size // 2
     pad_x = max(0, crop_size - img.shape[1])
@@ -110,9 +112,9 @@ def get_crop(img, crop_size, random_crop=False):
     if random_crop:
         freedom_x, freedom_y = img.shape[1] - crop_size, img.shape[0] - crop_size
         if freedom_x > 0:
-            center_x += np.random.randint(math.ceil(-freedom_x/2), freedom_x - math.floor(freedom_x/2) )
+            center_x += np.random.randint(math.ceil(-freedom_x/2.0), freedom_x - math.floor(freedom_x/2.0) )
         if freedom_y > 0:
-            center_y += np.random.randint(math.ceil(-freedom_y/2), freedom_y - math.floor(freedom_y/2) )
+            center_y += np.random.randint(math.ceil(-freedom_y/2.0), freedom_y - math.floor(freedom_y/2.0) )
 
     return img[center_y - half_crop : center_y + crop_size - half_crop, center_x - half_crop : center_x + crop_size - half_crop]
 
@@ -125,14 +127,17 @@ def process_item(item, crop_size, verbose, training, transforms=[[]]):
     img = load_img_fast_jpg(item)
     
     shape = list(img.shape[:2])
+#    if(training and (img.shape[0]<1 or img.shape[1]<1 or img.shape[2]<1)):
+#        print('Loaded: {}'.format(item))
 
     # discard images that do not have right resolution
     #if shape not in RESOLUTIONS[class_idx]:
     #    return None
 
     # some images may not be downloaded correctly and are B/W, discard those
-    #if img.ndim != 3:
-    #    return None
+    if img.ndim != 3:
+        print('BROKEN: {}'.format(item))
+        return None
 
     if len(transforms) == 1:
         _img = img
@@ -163,8 +168,17 @@ def process_item(item, crop_size, verbose, training, transforms=[[]]):
         else:
             img = _img
 
+#        rot_size= img.shape
+#        if(training and (img.shape[0]<1 or img.shape[1]<1 or img.shape[2]<1)):
+#            print('Rotated: {}, {}'.format(item, rot_size))
+            
         img = get_crop(img, crop_size * 2, random_crop=True if training else False) 
         # * 2 bc may need to scale by 0.5x and still get a 512px crop
+        
+#        cr_size = img.shape
+#        if(training and (img.shape[0]<1 or img.shape[1]<1 or img.shape[2]<1)):
+#            print('Rotated: {}, {}'.format(item, rot_size))
+#            print('Cropped: {}, {}'.format(item, cr_size))
 
         if verbose:
             print("om: ", img.shape, item)
@@ -175,10 +189,22 @@ def process_item(item, crop_size, verbose, training, transforms=[[]]):
             manipulated = 1.
             if verbose:
                 print("am: ", img.shape, item)
+        
+#        man_size = img.shape
+#        if(training and (img.shape[0]<1 or img.shape[1]<1 or img.shape[2]<1)):
+#            print('Rotated: {}, {}'.format(item, rot_size))
+#            print('Cropped: {}, {}'.format(item, cr_size))
+#            print('Manipulated: {}, {}'.format(item, man_size))
 
         img = get_crop(img, crop_size, random_crop=True if training else False)
         if verbose:
             print("ac: ", img.shape, item)
+            
+#        if(training and (img.shape[0]<1 or img.shape[1]<1 or img.shape[2]<1)):
+#            print('Rotated: {}, {}'.format(item, rot_size))
+#            print('Cropped: {}, {}'.format(item, cr_size))
+#            print('Manipulated: {}, {}'.format(item, man_size))
+#            print('Cropped 2: {},{}'.format(item, img.shape))
 
         img = preprocess_image(img)# TODO:
         if verbose:
