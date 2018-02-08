@@ -1,3 +1,5 @@
 models/
 .ipynb_checkpoints/
 jn_log.txt
+*.pyc
+submission*
