@@ -1,5 +1,6 @@
 import os
 import logging
+import time
 
 import random
 import numpy as np
@@ -73,6 +74,7 @@ def train(train_loader, model, optimizer, criterion, epoch):
     
     model.train()
     
+    since = time.time()
     logging.info('Epoch: {}'.format(epoch))
     print('Epoch: {}'.format(epoch))
     for i, (inputs, O, targets) in enumerate(train_loader):
@@ -92,7 +94,8 @@ def train(train_loader, model, optimizer, criterion, epoch):
             
     train_loss = np.mean(losses)
     logging.info('train_loss: {}'.format(train_loss))
-    print('train_loss: {}'.format(train_loss))
+    time_elapsed = time.time() - since
+    print('train_loss: {} | finished in {:.0f}m {:.0f}s'.format(train_loss, time_elapsed // 60, time_elapsed % 60))
 
 def validate(val_loader, model, criterion):
     accuracy_scores = []
